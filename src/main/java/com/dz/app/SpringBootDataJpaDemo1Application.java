@@ -10,6 +10,8 @@ import java.util.Scanner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import com.dz.app.entity.Employee;
 import com.dz.app.repo.EmployeeRepository;
@@ -19,10 +21,9 @@ import com.dz.app.utility.DateUtils;
 @SpringBootApplication
 public class SpringBootDataJpaDemo1Application {
 
-
 	private static final DecimalFormat df = new DecimalFormat("0.00");
-	private static final SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/YYYY");
-	
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+
 	public static void main(String[] args) {
 
 		ApplicationContext context = SpringApplication.run(SpringBootDataJpaDemo1Application.class, args);
@@ -98,34 +99,94 @@ public class SpringBootDataJpaDemo1Application {
 				break;
 			case 4:
 				System.out.println("****** SEARCH BY ID ***** \n");
-				System.out.println("Enter Employee EID : ");
-				eid = sc.nextLong();
-				AppUtility.loader();
-				optEmp = employeeRepository.findById(eid);
-				if (optEmp.isPresent()) {
-					employeeList = new ArrayList<Employee>();
-					employeeList.add(optEmp.get());
+				/*
+				 * System.out.println("Enter Employee EID : "); eid = sc.nextLong();
+				 * AppUtility.loader(); optEmp = employeeRepository.findById(eid);
+				 * 
+				 * if (optEmp.isPresent()) { employeeList = new ArrayList<Employee>();
+				 * employeeList.add(optEmp.get()); AppUtility.displayRecords(employeeList); }
+				 * else { System.err.println("employee not found by EID "); }
+				 */
+
+				System.out.println("select your choise \n");
+
+				System.out.println("1]search by EID  ");
+				System.out.println("2]search by first name  ");
+				System.out.println("3]search by last name  ");
+				System.out.println("2]birth date ");
+				int searchBy = sc.nextInt();
+				employeeList=new ArrayList<>();
+				switch (searchBy) {
+				case 1:
+					System.out.println("Please enter EId");
+					optEmp = employeeRepository.findById(sc.nextLong());
+					if (optEmp.isPresent()) {
+						employeeList = new ArrayList<Employee>();
+						employeeList.add(optEmp.get());
+						AppUtility.displayRecords(employeeList);
+					}
+					break;
+				case 2:
+					System.out.println("Please enter first name");
+					employeeList = employeeRepository.findByFirstName(sc.next());
+					break;
+				case 3:
+					System.out.println("Please enter last name");
+					employeeList = employeeRepository.findByLastName(sc.next());
+					break;
+
+				default:
+					System.err.println("Invalid Choice,try again\n");
+					break;
+				}
+				if (employeeList!=null && !employeeList.isEmpty()) {
 					AppUtility.displayRecords(employeeList);
 				} else {
 					System.err.println("employee not found by EID ");
 				}
 				break;
 			case 5:
+
+				/*
+				 * System.out.println(
+				 * "\n-------------------------------------------------------------------------------------------------------------"
+				 * ); System.out.
+				 * println("ID	|	NAME		|	STATUS 	|	AGE	| 	SALARY 		|	CREATED ON	 "
+				 * ); System.out.println(
+				 * "---------------------------------------------------------------------------------------------------------------"
+				 * );
+				 * 
+				 * employeeRepository.findAll().forEach(emp->{
+				 * 
+				 * System.out.println(emp.getEid()+"\t|"+emp.getFirstName()+" "+emp.getLastName(
+				 * )+"\t\t|\t"+emp.getStatus()+"\t|\t"+DateUtils.getAge(DateUtils.
+				 * convertJUtilDateTimeToString(emp.getBirthDate()))+"\t|\t"+df.format(emp.
+				 * getSalary())+"\t|\t"+sdf.format(emp.getBaseProperties().getCreatedOn()));
+				 * 
+				 * }); System.out.println(
+				 * "-----------------------------------------------------------------------------------------------------------------\n"
+				 * );
+				 * 
+				 * 
+				 * 
+				 */
 				
-				System.out.println("\n-------------------------------------------------------------------------------------------------------------");
-				System.out.println("ID	|	NAME		|	STATUS 	|	AGE	| 	SALARY 		|	CREATED ON	 ");
-				System.out.println("---------------------------------------------------------------------------------------------------------------");   
+				/*
+				 * Page<Employee> findaEmployees = employeeRepository.findAll(PageRequest.of(1,
+				 * 20)); System.out.println(findaEmployees.getContent().size());
+				 */
 				
-				employeeRepository.findAll().forEach(emp->{
-					
-					System.out.println(emp.getEid()+"\t|"+emp.getFirstName()+" "+emp.getLastName()+"\t\t|\t"+emp.getStatus()+"\t|\t"+DateUtils.getAge(DateUtils.convertJUtilDateTimeToString(emp.getBirthDate()))+"\t|\t"+df.format(emp.getSalary())+"\t|\t"+sdf.format(emp.getBaseProperties().getCreatedOn()));
-					
-				});
-				System.out.println("-----------------------------------------------------------------------------------------------------------------\n");
-				
+				AppUtility.loader();
+				System.out.println("\nEnter each page  size : ");
+				Integer pageSize =sc.nextInt();
+				System.err.println("note : now on all pages record size will be "+pageSize +"\n\n");
+				Page<Employee> emmPages = employeeRepository.findAll(PageRequest.of(1,pageSize));
+				System.out.println("Total Pages : "+emmPages.getTotalPages());
+				System.out.println("pp : "+emmPages.getNumber());
+				System.out.println("bbmppp : "+emmPages.getNumberOfElements());
+				AppUtility.displayRecords(emmPages.getContent());
 				
 				break;
-
 			case 6:
 				System.exit(0);
 				break;

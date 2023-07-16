@@ -423,10 +423,10 @@ public class AppUtility {
 		
 		
 		if(trn!=null) {
-			trn.getBaseProperties().setUpdatedBy("admin");
+			trn.getBaseProperties().setUpdatedBy("spring-boot-demo1");
 			trn.getBaseProperties().setUpdatedOn(new Date());
 		}else {
-			trn = new Employee(new BaseProperties("A",new Date(),"admin",null, null));
+			trn = new Employee(new BaseProperties("A",new Date(),"spring-boot-demo1",null, null));
 		}
 		
 		if(label.equalsIgnoreCase("ADD") || label.equalsIgnoreCase("ALL")|| label.equalsIgnoreCase("NAMES")) {
