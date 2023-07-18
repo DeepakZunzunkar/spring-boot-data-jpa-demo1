@@ -3,6 +3,7 @@ package com.dz.app;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -98,7 +99,7 @@ public class SpringBootDataJpaDemo1Application {
 				}
 				break;
 			case 4:
-				System.out.println("****** SEARCH BY ID ***** \n");
+				System.out.println("****** SEARCH OP ***** \n");
 				/*
 				 * System.out.println("Enter Employee EID : "); eid = sc.nextLong();
 				 * AppUtility.loader(); optEmp = employeeRepository.findById(eid);
@@ -110,12 +111,18 @@ public class SpringBootDataJpaDemo1Application {
 
 				System.out.println("select your choise \n");
 
-				System.out.println("1]search by EID  ");
-				System.out.println("2]search by first name  ");
-				System.out.println("3]search by last name  ");
-				System.out.println("2]birth date ");
+				System.out.println("1] search by EID  ");
+				System.out.println("2] search by first name  ");
+				System.out.println("3] search by last name  ");
+				System.out.println("4] search by birth date ");
+				System.out.println("5] birtdate Between [yyyy-MM-dd]");
+				System.out.println("6] First Name like ");
+				System.out.println("7] First Name Start With  ");
+				System.out.println("8] created date less than equal :");
+				System.out.println("9] created date greater than equal ");
+				System.out.println("10] Age By Name  ");
 				int searchBy = sc.nextInt();
-				employeeList=new ArrayList<>();
+				employeeList = new ArrayList<>();
 				switch (searchBy) {
 				case 1:
 					System.out.println("Please enter EId");
@@ -123,7 +130,6 @@ public class SpringBootDataJpaDemo1Application {
 					if (optEmp.isPresent()) {
 						employeeList = new ArrayList<Employee>();
 						employeeList.add(optEmp.get());
-						AppUtility.displayRecords(employeeList);
 					}
 					break;
 				case 2:
@@ -135,14 +141,63 @@ public class SpringBootDataJpaDemo1Application {
 					employeeList = employeeRepository.findByLastName(sc.next());
 					break;
 
+				case 4:
+					System.out.println("Please enter birtdate [yyyy-MM-dd]");
+					String dateStr = sc.next();
+					Date datedob = DateUtils.convertStringToJUtilDateTime(dateStr);
+					employeeList = employeeRepository.findByBirthDate(datedob);
+					break;
+				case 5:
+					System.out.println("Please enter start date  : ");
+					String dateStr1 = sc.next();
+					System.out.println("Please enter end date  :");
+					String dateStr2 = sc.next();
+					employeeList = employeeRepository.findByBirthDateBetweenOrderByBirthDateAsc(
+							DateUtils.convertStringToJUtilDateTime(dateStr1),
+							DateUtils.convertStringToJUtilDateTime(dateStr2));
+					break;
+
+				case 6:
+					System.out.println("enter first name :");
+					employeeList = employeeRepository.findByFirstNameLike(sc.next());
+					break;
+
+				case 7:
+					System.out.println("enter first name prefix :");
+					employeeList = employeeRepository.findByFirstNameStartingWith(sc.next());
+					break;
+
+				case 8:
+					System.out.println("enter date :");
+					employeeList = employeeRepository.findByBasePropertiesCreatedOnLessThanEqual(DateUtils.convertStringToJUtilDateTime(sc.next()));
+					break;
+					
+				case 9:
+					System.out.println("enter date :");
+					employeeList = employeeRepository.findByBasePropertiesCreatedOnGreaterThanEqual(DateUtils.convertStringToJUtilDateTime(sc.next()));
+					break;
+				
+				case 10:
+					System.out.println("enter first name :");
+					int age  = employeeRepository.getAgeByName(sc.next());
+					System.err.println("\n Age "+age);
+					break;
+				
+				case 11:
+					System.out.println("enter salary :");
+					employeeList = employeeRepository.getSalaryGreaterThan(sc.nextDouble());
+					break;
+					
+					
+					
 				default:
 					System.err.println("Invalid Choice,try again\n");
 					break;
 				}
-				if (employeeList!=null && !employeeList.isEmpty()) {
+				if (employeeList != null && !employeeList.isEmpty()) {
 					AppUtility.displayRecords(employeeList);
 				} else {
-					System.err.println("employee not found by EID ");
+					System.err.println("employees not found ");
 				}
 				break;
 			case 5:
@@ -170,22 +225,22 @@ public class SpringBootDataJpaDemo1Application {
 				 * 
 				 * 
 				 */
-				
+
 				/*
 				 * Page<Employee> findaEmployees = employeeRepository.findAll(PageRequest.of(1,
 				 * 20)); System.out.println(findaEmployees.getContent().size());
 				 */
-				
+
 				AppUtility.loader();
 				System.out.println("\nEnter each page  size : ");
-				Integer pageSize =sc.nextInt();
-				System.err.println("note : now on all pages record size will be "+pageSize +"\n\n");
-				Page<Employee> emmPages = employeeRepository.findAll(PageRequest.of(1,pageSize));
-				System.out.println("Total Pages : "+emmPages.getTotalPages());
-				System.out.println("pp : "+emmPages.getNumber());
-				System.out.println("bbmppp : "+emmPages.getNumberOfElements());
+				Integer pageSize = sc.nextInt();
+				System.err.println("note : now on all pages record size will be " + pageSize + "\n\n");
+				Page<Employee> emmPages = employeeRepository.findAll(PageRequest.of(1, pageSize));
+				System.out.println("Total Pages : " + emmPages.getTotalPages());
+				System.out.println("pp : " + emmPages.getNumber());
+				System.out.println("bbmppp : " + emmPages.getNumberOfElements());
 				AppUtility.displayRecords(emmPages.getContent());
-				
+
 				break;
 			case 6:
 				System.exit(0);
